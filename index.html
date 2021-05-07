@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="main.css" />
+    <title>Document</title>
+    <style>
+      #box {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-color: aqua;
+        margin-left: 50%;
+        margin-right: auto;
+        /* vertical-align: middle; */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="lowerLeft"></div>
+    <div id="lowerRight"></div>
+    <div id="upperLeft"></div>
+    <div id="upperRight"></div>
+    <br /><br /><br />
+    <button type="button" id="btn">click</button>
+    <div id="box"></div>
+    <div id="posX">X:</div>
+    <div id="uiPosX">ui posX:</div>
+    <div id="posY">Y:</div>
+
+    <div id="dist">Dist:</div>
+    <script src="jquery-3.6.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+    <script>
+      console.log($("#lowerRight").offset());
+      console.log($("#lowerLeft").width());
+
+      $(document).ready(function () {
+        $("#box").draggable({
+          drag: function (e, ui) {
+            $("#posY").html(`Y:${$("#box").offset().top}`);
+            $("#uiPosX").html(`ui posX:${ui.position.left}`);
+            $("#posX").html(`X: ${$("#box").offset().left}`);
+            $("#dist").text(
+              `Dist:${distance($("#box").offset(), $("#lowerLeft").offset())}`
+            );
+          },
+        });
+
+        $("#btn").click(function () {
+          let windowHeight = $(window).height();
+          console.log(windowHeight);
+          let boxHeight = $("#box").height();
+          console.log(boxHeight);
+          let desiredBottom = 400;
+
+          let newPos = windowHeight - (boxHeight + desiredBottom);
+          console.log(newPos);
+          $("#box").animate({ top: newPos }, 5000, function () {
+            $("#box").css({ top: "100px" });
+          });
+        });
+      });
+      function distance(pointA, pointB) {
+        let xA = Math.abs(pointA.left);
+        let yA = Math.abs(pointA.top);
+        let xB = Math.abs(pointB.left);
+        let yB = Math.abs(pointB.top);
+        let yDistance = Math.pow(yB - yA, 2);
+        let xDistance = Math.pow(xB - xA, 2);
+        let x = Math.sqrt(xDistance + yDistance);
+
+        return x;
+      }
+    </script>
+  </body>
+</html>
