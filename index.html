@@ -8,12 +8,10 @@
     <title>Document</title>
     <style>
       #box {
-        position: absolute;
         width: 100px;
         height: 100px;
         background-color: aqua;
-        margin-left: 50%;
-        margin-right: auto;
+        margin: auto;
         /* vertical-align: middle; */
       }
     </style>
@@ -27,26 +25,64 @@
     <button type="button" id="btn">click</button>
     <div id="box"></div>
     <div id="posX">X:</div>
-    <div id="uiPosX">ui posX:</div>
+
     <div id="posY">Y:</div>
 
     <div id="dist">Dist:</div>
+    <div id="hori"></div>
+    <div id="vert"></div>
     <script src="jquery-3.6.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="jquery-ui.js"></script>
 
     <script>
-      console.log($("#lowerRight").offset());
-      console.log($("#lowerLeft").width());
-
       $(document).ready(function () {
+        let startX;
+        let startY;
+        let endX;
+        let endY;
         $("#box").draggable({
+          start: function (e, ui) {
+            console.log(e);
+            console.log(ui);
+            startX = ui.position.left;
+            startY = ui.position.top;
+            console.log(startX);
+            console.log(startY);
+          },
           drag: function (e, ui) {
-            $("#posY").html(`Y:${$("#box").offset().top}`);
-            $("#uiPosX").html(`ui posX:${ui.position.left}`);
-            $("#posX").html(`X: ${$("#box").offset().left}`);
-            $("#dist").text(
-              `Dist:${distance($("#box").offset(), $("#lowerLeft").offset())}`
-            );
+            let currentX = ui.position.left;
+            let currentY = ui.position.top;
+            if (movedRight(startX, currentX)) {
+              if (movedDown(startY, currentY)) {
+                if (
+                  distance(
+                    { top: startY, left: startX },
+                    { top: currentY, left: currentX }
+                  ) > 20
+                ) {
+                  $("#box").animate(
+                    {
+                      position: "absolute",
+                      marginTop: $(window).height() - $("#box").height(),
+                      marginLeft: $(window).width() - $("#box").width(),
+                      opacity: "0",
+                    },
+                    5000
+                  );
+                }
+              }
+            }
+            $("#posY").html(`Y: ${currentY}`);
+            $("#posX").html(`X: ${currentX}`);
+
+            $("#hori").text(currentX - startX);
+            $("#vert").text(currentY - startY);
+          },
+          stop: function (e, ui) {
+            endX = ui.position.left;
+            endY = ui.position.top;
+            console.log(endX);
+            console.log(endY);
           },
         });
 
@@ -74,6 +110,12 @@
         let x = Math.sqrt(xDistance + yDistance);
 
         return x;
+      }
+      function movedRight(startX, endX) {
+        return endX - startX > 0;
+      }
+      function movedDown(startY, endY) {
+        return endY - startY > 0;
       }
     </script>
   </body>
