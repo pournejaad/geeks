@@ -12,6 +12,8 @@ body {
   height: 5rem;
   background-color: gold;
   margin: 0.4rem;
+  text-align: center;
+  vertical-align: middle;
 }
 .moving-box {
   background-color: aqua;

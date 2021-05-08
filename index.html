@@ -10,10 +10,10 @@
   <body>
     <div class="container">
       <div class="box moving-box" id="guess"></div>
-      <div class="box box-tl"></div>
-      <div class="box box-tr"></div>
-      <div class="box box-br"></div>
-      <div class="box box-bl"></div>
+      <div class="box box-tl">Japanese</div>
+      <div class="box box-tr">Thai</div>
+      <div class="box box-br">Chinese</div>
+      <div class="box box-bl">Korean</div>
     </div>
     <button type="button" class="btn" id="btn">click</button>
     <div class="information">
@@ -28,103 +28,55 @@
       const threshold = 20;
       const fadingTimeMS = 3000;
       $(document).ready(function () {
-        let start = {};
-        let end = {};
+        // drag();
 
-        $("#guess").draggable({
-          start: function (e, ui) {
-            start = { left: e.target.offsetLeft, top: e.target.offsetTop };
-            console.log(start);
-          },
-          drag: function (e, ui) {
-            let current = {
-              left: e.target.offsetLeft,
-              top: e.target.offsetTop,
-            };
-            console.log(current);
-            // $("#guess").animate(
-            //   {
-            //     right: 0,
-            //     bottom: 0,
-            //   },
-            //   5000
-            // );
-            // if (movedRight(current.left, start.left)) {
-            //   if (movedDown(current.top, start.top)) {
-            //     if (distance(current, start) > 20) {
-            //     }
-            //   } else {
-            //     $(this).animate(
-            //       {
-            //         left: $(".box-tr")[0].offsetLeft,
-            //         top: $(".box-tr")[0].offsetTop,
-            //         opacity: "0",
-            //       },
-            //       fadingTimeMS
-            //     );
-            //   }
-            // }
-            if (goToBottomRight(current, start)) {
-              console.log("go to br");
-              $(this).animate(
-                {
-                  left: $(".box-br")[0].offsetLeft,
-                  top: $(".box-br")[0].offsetTop,
-                  opacity: "0",
-                },
-                fadingTimeMS
-              );
-            } else if (goToTopRight(current, start)) {
-              console.log("go to tr");
-              $(this).animate(
-                {
-                  left: $(".box-tr")[0].offsetLeft,
-                  top: $(".box-tr")[0].offsetTop,
-                },
-                fadingTimeMS
-              );
-            } else if (goToTopLeft(current, start)) {
-              console.log("go to tl");
-              $(this).animate(
-                {
-                  left: $(".box-tl")[0].offsetLeft,
-                  top: $(".box-tl")[0].offsetTop,
-                },
-                fadingTimeMS
-              );
-            } else if (goToBottomLeft(current, start)) {
-              console.log("go to bl");
-              $(this).animate(
-                {
-                  left: $(".box-bl")[0].offsetLeft,
-                  top: $(".box-bl")[0].offsetTop,
-                },
-                fadingTimeMS
-              );
-            }
-
-            $("#x-coor").text(`x-coordinate: ${e.target.offsetLeft}`);
-            $("#y-coor").text(`y-coordinate: ${e.target.offsetTop}`);
-          },
-          stop: function (e, ui) {
-            console.log("animate");
-          },
-        });
-
-        $("#btn").click(function () {
-          let windowHeight = $(window).height();
-          console.log(windowHeight);
-          let boxHeight = $("#box").height();
-          console.log(boxHeight);
-          let desiredBottom = 400;
-
-          let newPos = windowHeight - (boxHeight + desiredBottom);
-          console.log(newPos);
-          $("#box").animate({ top: newPos }, 5000, function () {
-            $("#box").css({ top: "100px" });
-          });
-        });
+        drag();
       });
+      let topValue = $("#guess")[0].offsetTop;
+      console.log(topValue);
+      function drag() {
+        let start = {};
+        let current = {};
+        let end = {};
+        $("#guess")
+          .draggable({
+            addClasses: false,
+            start: function (e, ui) {
+              start.left = e.target.offsetLeft;
+              start.top = e.target.offsetTop;
+            },
+            drag: function (e, ui) {
+              current.left = e.target.offsetLeft;
+              current.top = e.target.offsetTop;
+
+              if (goToBottomRight(current, start)) {
+                $("#guess").stop();
+                animateTo($(this), $(".box-br")[0]);
+              } else if (goToTopRight(current, start)) {
+                $("#guess").stop();
+                animateTo($(this), $(".box-tr")[0]);
+              } else if (goToTopLeft(current, start)) {
+                $("#guess").stop();
+                animateTo($(this), $(".box-tl")[0]);
+              } else if (goToBottomLeft(current, start)) {
+                $("#guess").stop();
+                animateTo($(this), $(".box-bl")[0]);
+              }
+
+              // $("#x-coor").text(`x-coordinate: ${e.target.offsetLeft}`);
+              // $("#y-coor").text(`y-coordinate: ${e.target.offsetTop}`);
+            },
+            stop: function (e, ui) {
+              console.log("animate");
+            },
+          })
+          .animate(
+            {
+              top: $(".container").height() - $("#guess").height() - topValue,
+            },
+            5000
+          );
+      }
       function distance(end, start) {
         let y = Math.pow(end.top - start.top, 2);
         let x = Math.pow(end.left - start.left, 2);
@@ -138,30 +90,40 @@
       }
       function goToBottomRight(end, start) {
         return (
-          movedDown(end.top, start.top) &&
-          movedRight(end.left, start.left) &&
+          movedDown(end, start) &&
+          movedRight(end, start) &&
           distance(end, start) > threshold
         );
       }
       function goToTopRight(end, start) {
         return (
-          !movedDown(end.top, start.top) &&
-          movedRight(end.left, start.left) &&
+          !movedDown(end, start) &&
+          movedRight(end, start) &&
           distance(end, start) > threshold
         );
       }
       function goToTopLeft(end, start) {
         return (
-          !movedDown(end.top, start.top) &&
-          !movedRight(end.left, start.left) &&
+          !movedDown(end, start) &&
+          !movedRight(end, start) &&
           distance(end, start) > threshold
         );
       }
       function goToBottomLeft(end, start) {
         return (
-          movedDown(end.top, start.top) &&
-          !movedRight(end.left, start.left) &&
+          movedDown(end, start) &&
+          !movedRight(end, start) &&
           distance(end, start) > threshold
+        );
+      }
+      function animateTo(element, target) {
+        element.animate(
+          {
+            left: target.offsetLeft,
+            top: target.offsetTop,
+            opacity: "0",
+          },
+          fadingTimeMS
         );
       }
     </script>
