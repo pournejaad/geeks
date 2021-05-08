@@ -6,83 +6,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="main.css" />
     <title>Document</title>
-    <style>
-      #box {
-        width: 100px;
-        height: 100px;
-        background-color: aqua;
-        margin: auto;
-        /* vertical-align: middle; */
-      }
-    </style>
   </head>
   <body>
-    <div id="lowerLeft"></div>
-    <div id="lowerRight"></div>
-    <div id="upperLeft"></div>
-    <div id="upperRight"></div>
-    <br /><br /><br />
-    <button type="button" id="btn">click</button>
-    <div id="box"></div>
-    <div id="posX">X:</div>
-
-    <div id="posY">Y:</div>
-
-    <div id="dist">Dist:</div>
-    <div id="hori"></div>
-    <div id="vert"></div>
+    <div class="container">
+      <div class="box moving-box" id="guess"></div>
+      <div class="box box-tl"></div>
+      <div class="box box-tr"></div>
+      <div class="box box-br"></div>
+      <div class="box box-bl"></div>
+    </div>
+    <button type="button" class="btn" id="btn">click</button>
+    <div class="information">
+      <div class="info" id="x-coor">x-coordinate:</div>
+      <div class="info" id="y-coor">y-coordiante:</div>
+      <div class="info" id="dist">Dist:</div>
+    </div>
     <script src="jquery-3.6.0.js"></script>
     <script src="jquery-ui.js"></script>
 
     <script>
+      const threshold = 20;
+      const fadingTimeMS = 3000;
       $(document).ready(function () {
-        let startX;
-        let startY;
-        let endX;
-        let endY;
-        $("#box").draggable({
+        let start = {};
+        let end = {};
+
+        $("#guess").draggable({
           start: function (e, ui) {
-            console.log(e);
-            console.log(ui);
-            startX = ui.position.left;
-            startY = ui.position.top;
-            console.log(startX);
-            console.log(startY);
+            start = { left: e.target.offsetLeft, top: e.target.offsetTop };
+            console.log(start);
           },
           drag: function (e, ui) {
-            let currentX = ui.position.left;
-            let currentY = ui.position.top;
-            if (movedRight(startX, currentX)) {
-              if (movedDown(startY, currentY)) {
-                if (
-                  distance(
-                    { top: startY, left: startX },
-                    { top: currentY, left: currentX }
-                  ) > 20
-                ) {
-                  $("#box").animate(
-                    {
-                      position: "absolute",
-                      marginTop: $(window).height() - $("#box").height(),
-                      marginLeft: $(window).width() - $("#box").width(),
-                      opacity: "0",
-                    },
-                    5000
-                  );
-                }
-              }
+            let current = {
+              left: e.target.offsetLeft,
+              top: e.target.offsetTop,
+            };
+            console.log(current);
+            // $("#guess").animate(
+            //   {
+            //     right: 0,
+            //     bottom: 0,
+            //   },
+            //   5000
+            // );
+            // if (movedRight(current.left, start.left)) {
+            //   if (movedDown(current.top, start.top)) {
+            //     if (distance(current, start) > 20) {
+            //     }
+            //   } else {
+            //     $(this).animate(
+            //       {
+            //         left: $(".box-tr")[0].offsetLeft,
+            //         top: $(".box-tr")[0].offsetTop,
+            //         opacity: "0",
+            //       },
+            //       fadingTimeMS
+            //     );
+            //   }
+            // }
+            if (goToBottomRight(current, start)) {
+              console.log("go to br");
+              $(this).animate(
+                {
+                  left: $(".box-br")[0].offsetLeft,
+                  top: $(".box-br")[0].offsetTop,
+                  opacity: "0",
+                },
+                fadingTimeMS
+              );
+            } else if (goToTopRight(current, start)) {
+              console.log("go to tr");
+              $(this).animate(
+                {
+                  left: $(".box-tr")[0].offsetLeft,
+                  top: $(".box-tr")[0].offsetTop,
+                },
+                fadingTimeMS
+              );
+            } else if (goToTopLeft(current, start)) {
+              console.log("go to tl");
+              $(this).animate(
+                {
+                  left: $(".box-tl")[0].offsetLeft,
+                  top: $(".box-tl")[0].offsetTop,
+                },
+                fadingTimeMS
+              );
+            } else if (goToBottomLeft(current, start)) {
+              console.log("go to bl");
+              $(this).animate(
+                {
+                  left: $(".box-bl")[0].offsetLeft,
+                  top: $(".box-bl")[0].offsetTop,
+                },
+                fadingTimeMS
+              );
             }
-            $("#posY").html(`Y: ${currentY}`);
-            $("#posX").html(`X: ${currentX}`);
 
-            $("#hori").text(currentX - startX);
-            $("#vert").text(currentY - startY);
+            $("#x-coor").text(`x-coordinate: ${e.target.offsetLeft}`);
+            $("#y-coor").text(`y-coordinate: ${e.target.offsetTop}`);
           },
           stop: function (e, ui) {
-            endX = ui.position.left;
-            endY = ui.position.top;
-            console.log(endX);
-            console.log(endY);
+            console.log("animate");
           },
         });
 
@@ -100,22 +125,44 @@
           });
         });
       });
-      function distance(pointA, pointB) {
-        let xA = Math.abs(pointA.left);
-        let yA = Math.abs(pointA.top);
-        let xB = Math.abs(pointB.left);
-        let yB = Math.abs(pointB.top);
-        let yDistance = Math.pow(yB - yA, 2);
-        let xDistance = Math.pow(xB - xA, 2);
-        let x = Math.sqrt(xDistance + yDistance);
-
-        return x;
+      function distance(end, start) {
+        let y = Math.pow(end.top - start.top, 2);
+        let x = Math.pow(end.left - start.left, 2);
+        return Math.sqrt(x + y);
       }
-      function movedRight(startX, endX) {
-        return endX - startX > 0;
+      function movedRight(end, start) {
+        return end.left - start.left > 0;
       }
-      function movedDown(startY, endY) {
-        return endY - startY > 0;
+      function movedDown(end, start) {
+        return end.top - start.top > 0;
+      }
+      function goToBottomRight(end, start) {
+        return (
+          movedDown(end.top, start.top) &&
+          movedRight(end.left, start.left) &&
+          distance(end, start) > threshold
+        );
+      }
+      function goToTopRight(end, start) {
+        return (
+          !movedDown(end.top, start.top) &&
+          movedRight(end.left, start.left) &&
+          distance(end, start) > threshold
+        );
+      }
+      function goToTopLeft(end, start) {
+        return (
+          !movedDown(end.top, start.top) &&
+          !movedRight(end.left, start.left) &&
+          distance(end, start) > threshold
+        );
+      }
+      function goToBottomLeft(end, start) {
+        return (
+          movedDown(end.top, start.top) &&
+          !movedRight(end.left, start.left) &&
+          distance(end, start) > threshold
+        );
       }
     </script>
   </body>

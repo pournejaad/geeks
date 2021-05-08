@@ -1,55 +1,61 @@
-#panel,
-#flip {
-  padding: 5px;
-  text-align: center;
-  background-color: #e5eecc;
-  border: solid 1px #c3c3c3;
+body {
+  margin: 10px;
 }
-
-#panel {
-  padding: 50px;
-  display: none;
+.container {
+  border: 3px solid lightgray;
+  position: relative;
+  height: 80vh;
+  margin-bottom: 3rem;
 }
-#upperLeft {
-  width: 50px;
-  height: 50px;
-  background-color: red;
+.box {
+  width: 5rem;
+  height: 5rem;
+  background-color: gold;
+  margin: 0.4rem;
+}
+.moving-box {
+  background-color: aqua;
   position: absolute;
-  top: 0;
+  left: 40%;
+  z-index: 1;
+}
+.box-tl {
   left: 0;
-}
-
-#upperRight {
-  width: 50px;
-  height: 50px;
-  background-color: red;
-  position: absolute;
   top: 0;
-  right: 0%;
-}
-
-#lowerRight {
-  width: 50px;
-  height: 50px;
-  background-color: red;
   position: absolute;
-  bottom: 0%;
-  right: 0%;
 }
-
-#lowerLeft {
-  width: 50px;
-  height: 50px;
-  background-color: red;
+.box-tr {
+  right: 0;
+  top: 0;
   position: absolute;
-  bottom: 0%;
+  background-color: dodgerblue;
+}
+.box-br {
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  background-color: darkgoldenrod;
+}
+.box-bl {
   left: 0;
-}
-.lowerRight {
-  width: 50px;
-  height: 50px;
-  background-color: red;
+  bottom: 0;
   position: absolute;
-  bottom: 0%;
-  right: 0%;
+  background-color: tomato;
+}
+.btn {
+  width: 3rem;
+  height: 2rem;
+  margin: 0.2rem;
+}
+
+.information {
+  display: grid;
+
+  border: 3px solid lightblue;
+  grid-template: 90% / 30fr 30fr 40fr;
+  justify-items: stretch;
+  align-items: stretch;
+}
+.info {
+  background-color: aliceblue;
 }
