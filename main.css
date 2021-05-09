@@ -4,8 +4,10 @@ body {
 .container {
   border: 3px solid lightgray;
   position: relative;
-  height: 80vh;
-  margin-bottom: 3rem;
+  height: 50vh;
+  width: 80vw;
+  margin: 5rem;
+  background-color: rgba(243, 239, 250, 0.815);
 }
 .box {
   width: 5rem;
@@ -18,8 +20,6 @@ body {
 .moving-box {
   background-color: aqua;
   position: absolute;
-  left: 40%;
-  z-index: 1;
 }
 .box-tl {
   left: 0;
@@ -45,19 +45,29 @@ body {
   background-color: tomato;
 }
 .btn {
-  width: 3rem;
-  height: 2rem;
-  margin: 0.2rem;
+  width: 5em;
+  height: 3em;
+  font-size: small;
+  color: blanchedalmond;
+  background-color: rgb(48, 0, 0);
+  margin-left: 30%;
+  margin-bottom: 1rem;
 }
 
 .information {
-  display: grid;
-
-  border: 3px solid lightblue;
-  grid-template: 90% / 30fr 30fr 40fr;
-  justify-items: stretch;
-  align-items: stretch;
+  border: 3px solid lightgray;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  width: 40vw;
+  height: 5vh;
+  margin: auto;
 }
 .info {
-  background-color: aliceblue;
+  width: 40%;
+  margin: 1rem;
+  flex-basis: 5rem;
+  flex-grow: 1;
 }

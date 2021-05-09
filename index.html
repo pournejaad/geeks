@@ -15,117 +15,16 @@
       <div class="box box-br">Chinese</div>
       <div class="box box-bl">Korean</div>
     </div>
-    <button type="button" class="btn" id="btn">click</button>
+
+    <button type="button" class="btn" id="btn">START</button>
+
     <div class="information">
-      <div class="info" id="x-coor">x-coordinate:</div>
-      <div class="info" id="y-coor">y-coordiante:</div>
-      <div class="info" id="dist">Dist:</div>
+      <div class="info" id="gameCounter">rounds : 0</div>
+      <div class="info" id="point">point : 0</div>
     </div>
+
     <script src="jquery-3.6.0.js"></script>
     <script src="jquery-ui.js"></script>
-
-    <script>
-      const threshold = 20;
-      const fadingTimeMS = 3000;
-      $(document).ready(function () {
-        // drag();
-
-        drag();
-      });
-      let topValue = $("#guess")[0].offsetTop;
-      console.log(topValue);
-      function drag() {
-        let start = {};
-        let current = {};
-        let end = {};
-        $("#guess")
-          .draggable({
-            addClasses: false,
-            start: function (e, ui) {
-              start.left = e.target.offsetLeft;
-              start.top = e.target.offsetTop;
-            },
-            drag: function (e, ui) {
-              current.left = e.target.offsetLeft;
-              current.top = e.target.offsetTop;
-
-              if (goToBottomRight(current, start)) {
-                $("#guess").stop();
-                animateTo($(this), $(".box-br")[0]);
-              } else if (goToTopRight(current, start)) {
-                $("#guess").stop();
-                animateTo($(this), $(".box-tr")[0]);
-              } else if (goToTopLeft(current, start)) {
-                $("#guess").stop();
-                animateTo($(this), $(".box-tl")[0]);
-              } else if (goToBottomLeft(current, start)) {
-                $("#guess").stop();
-                animateTo($(this), $(".box-bl")[0]);
-              }
-
-              // $("#x-coor").text(`x-coordinate: ${e.target.offsetLeft}`);
-              // $("#y-coor").text(`y-coordinate: ${e.target.offsetTop}`);
-            },
-            stop: function (e, ui) {
-              console.log("animate");
-            },
-          })
-          .animate(
-            {
-              top: $(".container").height() - $("#guess").height() - topValue,
-            },
-            5000
-          );
-      }
-      function distance(end, start) {
-        let y = Math.pow(end.top - start.top, 2);
-        let x = Math.pow(end.left - start.left, 2);
-        return Math.sqrt(x + y);
-      }
-      function movedRight(end, start) {
-        return end.left - start.left > 0;
-      }
-      function movedDown(end, start) {
-        return end.top - start.top > 0;
-      }
-      function goToBottomRight(end, start) {
-        return (
-          movedDown(end, start) &&
-          movedRight(end, start) &&
-          distance(end, start) > threshold
-        );
-      }
-      function goToTopRight(end, start) {
-        return (
-          !movedDown(end, start) &&
-          movedRight(end, start) &&
-          distance(end, start) > threshold
-        );
-      }
-      function goToTopLeft(end, start) {
-        return (
-          !movedDown(end, start) &&
-          !movedRight(end, start) &&
-          distance(end, start) > threshold
-        );
-      }
-      function goToBottomLeft(end, start) {
-        return (
-          movedDown(end, start) &&
-          !movedRight(end, start) &&
-          distance(end, start) > threshold
-        );
-      }
-      function animateTo(element, target) {
-        element.animate(
-          {
-            left: target.offsetLeft,
-            top: target.offsetTop,
-            opacity: "0",
-          },
-          fadingTimeMS
-        );
-      }
-    </script>
+    <script src="app.js"></script>
   </body>
 </html>
