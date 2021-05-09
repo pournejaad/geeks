@@ -1,17 +1,23 @@
 class Person {
-  constructor(nationality, color) {
-    this.nationality = "chinese";
-    this.color = "darkgoldenrod";
+  constructor(nationality, img) {
+    this.nationality = nationality;
+    this.image = img;
   }
 }
+let allNations = [
+  new Person("chinese", "./img/chinese.png"),
+  new Person("japanese", "./img/japanese.png"),
+  new Person("korean", "./img/korea.png"),
+  new Person("thai", "./img/thai.png"),
+];
 let person = {};
 let nationality;
-const rounds = 3;
+const rounds = 10;
 let gameCounter = 0;
 let winPoint = 20;
 let losePoint = -5;
 let finalPoint = 0;
-const threshold = 10;
+const threshold = 20;
 const fadingTimeMS = 3000;
 let containerWidth = $(".container").width();
 const boxWidht = $("#guess").width();
@@ -21,7 +27,7 @@ const animateToTopValue =
 
 const animationRoute = {
   start: {
-    top: "0",
+    top: 0,
     left: center,
   },
   end: {
@@ -34,11 +40,17 @@ $(document).ready(function () {
   $("#guess").css({ left: center });
   $("#btn").click(function () {
     initDraggble();
-    person = new Person();
+    initPerson();
     startGame();
   });
 });
-
+function initPerson() {
+  person = allNations[Math.floor(Math.random() * allNations.length)];
+  $("#guess").css({
+    background: `url(${person.image}) no-repeat`,
+    "background-size": "5rem",
+  });
+}
 function startGame() {
   gameCounter = 0;
   animateTo({
@@ -48,7 +60,7 @@ function startGame() {
 }
 
 function checkAnswer() {
-  if (person.nationality === nationality) {
+  if (person.nationality.toLowerCase() === nationality.toLowerCase()) {
     finalPoint += winPoint;
   } else {
     finalPoint += losePoint;
@@ -62,9 +74,6 @@ function resetNationality() {
 function updatePointCell() {
   $("#point").text(`point: ${finalPoint}`);
 }
-function disableDrag() {
-  $("#guess").draggable("disable");
-}
 
 function initDraggble() {
   let start = {};
@@ -77,9 +86,14 @@ function initDraggble() {
     drag: function (e, ui) {
       current.left = e.target.offsetLeft;
       current.top = e.target.offsetTop;
-
-      if (goToBottomRight(current, start)) {
-        $("#guess").stop(true);
+      if (distance(current, start) > threshold) {
+        $("#guess").stop();
+      }
+    },
+    stop: function (e, ui) {
+      let end = { left: e.target.offsetLeft, top: e.target.offsetTop };
+      if (goToBottomRight(end, start)) {
+        $("#guess").stop();
 
         nationality = $(".box-br").text().toLowerCase();
 
@@ -87,32 +101,29 @@ function initDraggble() {
           left: $(".box-br")[0].offsetLeft,
           top: $(".box-br")[0].offsetTop,
         });
-      } else if (goToTopRight(current, start)) {
-        $("#guess").stop(true);
+      } else if (goToTopRight(end, start)) {
+        $("#guess").stop();
 
         nationality = $(".box-tr").text().toLowerCase();
         animateTo({
           left: $(".box-tr")[0].offsetLeft,
           top: $(".box-tr")[0].offsetTop,
         });
-      } else if (goToTopLeft(current, start)) {
-        $("#guess").stop(true);
+      } else if (goToTopLeft(end, start)) {
+        $("#guess").stop();
         nationality = $(".box-tl").text().toLowerCase();
         animateTo({
           left: $(".box-tl")[0].offsetLeft,
           top: $(".box-tl")[0].offsetTop,
         });
-      } else if (goToBottomLeft(current, start)) {
-        $("#guess").stop(true);
+      } else if (goToBottomLeft(end, start)) {
+        $("#guess").stop();
         nationality = $(".box-bl").text().toLowerCase();
         animateTo({
           top: $(".box-bl")[0].offsetTop,
           left: $(".box-bl")[0].offsetLeft,
         });
       }
-    },
-    stop: function (e, ui) {
-      disableDrag();
     },
   });
 }
@@ -140,7 +151,7 @@ function init() {
     top: animationRoute.start.top,
     left: center,
   });
-  enableDrag();
+  initPerson();
 }
 function animateTo(point) {
   $("#guess").animate(
@@ -162,11 +173,13 @@ function increaseGameCounter() {
 }
 function checkGameStatus() {
   if (gameCounter >= rounds) {
-    if (confirm(`You point is : ${finalPoint} Play Again?`)) {
-      resetGame();
-    } else {
-      location.reload();
-    }
+    setTimeout(function () {
+      if (confirm(`You point is : ${finalPoint} Play Again?`)) {
+        resetGame();
+      } else {
+        location.reload();
+      }
+    }, 500);
   } else {
     init();
     animateTo({
